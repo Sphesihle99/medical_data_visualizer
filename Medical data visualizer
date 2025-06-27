@@ -4,8 +4,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def draw_heat_map():
-    # Read data
-    df = pd.read_csv('medical_examination.csv')
+    try:
+        df = pd.read_csv('medical_examination.csv')
+    except FileNotFoundError:
+        print("Error: 'medical_examination.csv' not found.")
+        return None
+
+    # Drop obvious invalid entries
+    df = df[(df['height'] > 0) & (df['weight'] > 0)]
 
     # Clean the data
     df_heat = df[
@@ -34,9 +40,11 @@ def draw_heat_map():
         center=0,
         square=True,
         linewidths=0.5,
-        cbar_kws={"shrink": 0.5}
+        cbar_kws={"shrink": 0.5},
+        ax=ax
     )
 
     # Do not modify the next two lines
     fig.savefig('heatmap.png')
+    plt.close(fig)  # Avoids display issues in some environments
     return fig
